@@ -1,0 +1,52 @@
+/* Copyright 2026 Vaadin Ltd. Licensed under the Apache License, Version 2.0. */
+/*
+ * Aura color adapter for this standalone, offline HTML guide.
+ * Fallback palette values are the defaults from @vaadin/aura 25.3.0.
+ * Consume Aura's tokens when present; do not override its computed properties.
+ * The remaining colors are local surface, emphasis and contrast derivations.
+ */
+html {
+  --atlas-aura-blue: var(--aura-blue, oklch(0.55 0.2 264));
+  --atlas-aura-green: var(--aura-green, oklch(0.6 0.2 155));
+  --atlas-aura-orange: var(--aura-orange, oklch(0.61 0.35 87));
+  --atlas-aura-purple: var(--aura-purple, oklch(0.58 0.22 290));
+  --atlas-aura-yellow: var(--aura-yellow, oklch(0.89 0.3 98));
+
+  --paper: var(--aura-background-color-light, oklch(0.95 0.005 248));
+  --surface: white;
+  --surface-subtle: color-mix(in oklch, var(--paper) 45%, var(--surface));
+  --surface-tinted: color-mix(in oklch, var(--accent) 4%, var(--surface));
+  --ink: var(--vaadin-text-color, oklch(from var(--paper) 0.25 c h));
+  --muted: color-mix(in oklch, var(--ink) 72%, var(--paper));
+  --line: color-mix(in oklch, var(--ink) 17%, var(--paper));
+  --line-subtle: color-mix(in oklch, var(--ink) 9%, var(--paper));
+  --line-strong: color-mix(in oklch, var(--ink) 30%, var(--paper));
+
+  --accent: var(--aura-accent-color-light, var(--atlas-aura-blue));
+  --accent-hover: oklch(from var(--accent) calc(l - 0.07) c h);
+  --accent-soft: color-mix(in oklch, var(--accent) 11%, var(--surface));
+  --accent-line: color-mix(in oklch, var(--accent) 45%, var(--paper));
+  --accent-ring: color-mix(in oklch, var(--accent) 16%, transparent);
+  --on-accent: white;
+  --success: var(--atlas-aura-green);
+  --success-text: oklch(from var(--atlas-aura-green) 0.44 c h);
+  --success-soft: color-mix(in oklch, var(--atlas-aura-green) 9%, var(--surface));
+  --orange: oklch(from var(--atlas-aura-orange) 0.5 c h);
+  --purple: var(--atlas-aura-purple);
+  --match: color-mix(in oklch, var(--atlas-aura-yellow) 25%, var(--surface));
+  --match-current: color-mix(in oklch, var(--atlas-aura-yellow) 55%, var(--surface));
+
+  --sidebar-bg: var(--aura-background-color-dark, oklch(0.2 0.01 260));
+  --sidebar-text: oklch(from var(--sidebar-bg) 0.95 c h);
+  --sidebar-muted: color-mix(in oklch, var(--sidebar-text) 75%, var(--sidebar-bg));
+  --sidebar-line: color-mix(in oklch, var(--sidebar-text) 30%, var(--sidebar-bg));
+  --sidebar-hover: color-mix(in oklch, var(--sidebar-text) 8%, var(--sidebar-bg));
+  --sidebar-accent: oklch(from var(--accent) 0.8 calc(c * 0.7) h);
+  --sidebar-active: color-mix(in oklch, var(--accent) 24%, var(--sidebar-bg));
+
+  --shadow-faint: color-mix(in oklch, var(--sidebar-bg) 2%, transparent);
+  --shadow-soft: color-mix(in oklch, var(--sidebar-bg) 8%, transparent);
+  --shadow-overlay: color-mix(in oklch, var(--sidebar-bg) 19%, transparent);
+  --backdrop: color-mix(in oklch, var(--sidebar-bg) 40%, transparent);
+  --map-dot: color-mix(in oklch, var(--ink) 13%, transparent);
+}

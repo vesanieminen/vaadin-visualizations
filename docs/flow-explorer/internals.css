@@ -1,0 +1,449 @@
+/* Copyright 2026 Vaadin Ltd. Licensed under the Apache License, Version 2.0. */
+.inside-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  margin-bottom: 26px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+.inside-breadcrumb a {
+  text-decoration: none;
+}
+.inside-hero p {
+  max-width: 850px;
+}
+.inside-preview {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+}
+.inside-preview a,
+.anatomy-part {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 13px;
+  text-decoration: none;
+  border-radius: 7px;
+}
+.inside-preview a:hover,
+.anatomy-part:hover {
+  border-color: var(--accent);
+  background: var(--surface-tinted);
+}
+.inside-preview a > span:nth-child(2),
+.anatomy-part > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.inside-preview strong,
+.inside-preview small,
+.anatomy-part strong,
+.anatomy-part small {
+  display: block;
+}
+.inside-preview strong {
+  font-size: 12px;
+}
+.inside-preview small {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.inside-number {
+  font: 11px var(--mono);
+  color: var(--accent);
+}
+.inside-open {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--on-accent);
+  padding: 12px 16px;
+  text-decoration: none;
+  font-weight: 550;
+  font-size: 12px;
+}
+.inside-open:hover {
+  background: var(--accent-hover);
+}
+.inside-teaser {
+  display: block;
+  border: 1px solid var(--accent-line);
+  background: var(--accent-soft);
+  border-radius: 6px;
+  margin-top: 16px;
+  padding: 12px;
+  color: var(--accent);
+  font-size: 12px;
+  text-decoration: none;
+}
+.anatomy {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.anatomy-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 26px;
+  border-bottom: 1px solid var(--line);
+}
+.anatomy-heading h2 {
+  margin: 4px 0 0;
+}
+.anatomy-heading > span {
+  color: var(--muted);
+  font-size: 11px;
+}
+.anatomy-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+}
+.anatomy-diagram {
+  padding: 26px;
+  background:
+    radial-gradient(var(--map-dot) 0.65px, transparent 0.65px) 0 0/16px 16px,
+    var(--surface-subtle);
+}
+.anatomy-root {
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  border-radius: 8px;
+  padding: 20px 20px;
+  margin-bottom: 24px;
+  position: relative;
+  box-shadow: 0 7px 18px var(--shadow-soft);
+}
+.anatomy-root strong {
+  font-size: 16px;
+  display: inline;
+}
+.anatomy-root small {
+  display: block;
+  padding-left: 15px;
+  color: var(--sidebar-muted);
+  font-size: 11px;
+  margin-top: 5px;
+}
+.anatomy-root .tiny-dot {
+  display: inline-block;
+  margin-right: 7px;
+}
+.anatomy-root:after {
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 25px;
+  background: var(--accent-line);
+  bottom: -25px;
+  left: 26px;
+}
+.anatomy-parts {
+  display: grid;
+  gap: 12px;
+  padding-left: 26px;
+  position: relative;
+}
+.anatomy-parts:before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 36px;
+  width: 1px;
+  background: var(--accent-line);
+}
+.anatomy-part {
+  position: relative;
+  padding: 15px;
+  min-height: 77px;
+}
+.anatomy-part:before {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  width: 14px;
+  height: 1px;
+  background: var(--accent-line);
+}
+.anatomy-part.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+.anatomy-part strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.anatomy-part small {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.anatomy-caption {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 24px 0 0;
+}
+.anatomy-detail {
+  padding: 28px;
+  border-left: 1px solid var(--line);
+  min-width: 0;
+}
+.anatomy-detail h2 {
+  margin: 8px 0 16px;
+}
+.anatomy-detail > p {
+  font-size: 14px;
+  line-height: 1.75;
+  min-height: 95px;
+}
+.anatomy-source-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  font: 9px var(--mono);
+  color: var(--muted);
+  margin: 25px 0 8px;
+}
+.anatomy-code {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-subtle);
+  font: 11px/1.8 var(--mono);
+  overflow: auto;
+  max-height: 285px;
+  padding: 14px 0;
+  margin: 0 0 16px;
+  tab-size: 4;
+}
+.anatomy-code > span {
+  display: block;
+  min-width: max-content;
+  padding-right: 15px;
+}
+.anatomy-code .ln {
+  display: inline-block;
+  width: 48px;
+  padding: 0 12px 0 6px;
+  text-align: right;
+  color: var(--muted);
+  user-select: none;
+}
+.anatomy-actions {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+.anatomy-actions > a {
+  font-size: 12px;
+}
+.inside-execution,
+.inside-locations {
+  margin-top: 38px;
+}
+.inside-execution h2,
+.inside-locations h2 {
+  margin: 6px 0 20px;
+}
+.inside-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.inside-flow-step {
+  padding: 22px;
+  text-decoration: none;
+  color: var(--ink);
+  border-right: 1px solid var(--line);
+}
+.inside-flow-step:last-child {
+  border-right: 0;
+}
+.inside-flow-step:hover,
+.inside-flow-step.selected {
+  background: var(--accent-soft);
+}
+.flow-phase {
+  display: flex;
+  justify-content: space-between;
+  color: var(--accent);
+  font: 12px var(--mono);
+  margin-bottom: 18px;
+}
+.flow-phase > span {
+  font-size: 21px;
+}
+.inside-flow-step h3 {
+  font-size: 16px;
+}
+.inside-flow-step p {
+  color: var(--muted);
+  font-size: 12px;
+  min-height: 40px;
+}
+.inside-flow-step small {
+  color: var(--accent);
+  font-size: 11px;
+}
+.inside-rule {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 18px;
+  margin-top: 20px;
+  padding: 18px 22px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+}
+.inside-rule > span {
+  font: 9px var(--mono);
+  letter-spacing: 0.6px;
+  margin-top: 5px;
+  color: var(--accent);
+}
+.inside-rule p {
+  margin: 0;
+  font-size: 13px;
+}
+.inside-locations > p {
+  color: var(--muted);
+  font-size: 13px;
+}
+.inside-packages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.inside-packages article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  min-width: 0;
+}
+.inside-packages article > a {
+  display: grid;
+  gap: 9px;
+  padding: 18px;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.inside-packages small {
+  color: var(--muted);
+  font-size: 10px;
+}
+.inside-packages strong {
+  color: var(--ink);
+  font: 12px/1.6 var(--mono);
+}
+.inside-packages span {
+  font-size: 11px;
+}
+.inside-packages article > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--line-subtle);
+}
+.inside-packages button {
+  font-size: 11px;
+  background: transparent;
+  padding: 0;
+  color: var(--accent);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.inside-related {
+  margin-top: 38px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.inside-related > div {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.inside-related a {
+  font-size: 11px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface);
+  text-decoration: none;
+}
+@media (max-width: 1150px) {
+  .anatomy-body {
+    grid-template-columns: 1fr;
+  }
+  .anatomy-detail {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .anatomy-detail > p {
+    min-height: 0;
+  }
+  .anatomy-parts {
+    grid-template-columns: 1fr 1fr;
+  }
+  .anatomy-parts:before,
+  .anatomy-part:before,
+  .anatomy-root:after {
+    display: none;
+  }
+  .anatomy-parts {
+    padding: 0;
+  }
+  .anatomy-root {
+    margin-bottom: 16px;
+  }
+}
+@media (max-width: 650px) {
+  .anatomy-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .anatomy-parts,
+  .inside-packages,
+  .inside-flow {
+    grid-template-columns: 1fr;
+  }
+  .anatomy-diagram,
+  .anatomy-detail,
+  .anatomy-heading {
+    padding: 20px;
+  }
+  .inside-flow-step {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .inside-flow-step:last-child {
+    border-bottom: 0;
+  }
+  .inside-rule {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .anatomy-root strong {
+    font-size: 14px;
+  }
+}

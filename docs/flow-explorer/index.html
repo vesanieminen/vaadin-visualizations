@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#13161b" />
+    <meta
+      name="description"
+      content="An interactive, source-backed field guide to Vaadin Flow. Follow UI events, routing, state synchronization and frontend builds."
+    />
+    <title>Flow Atlas — inside Vaadin Flow</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%2313161b'/%3E%3Cpath d='M10 14h20l-5-5M30 26H10l5 5' fill='none' stroke='%233266e4' stroke-width='3'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="atlas.css" />
+    <link rel="stylesheet" href="internals.css" />
+    <link rel="stylesheet" href="world.css" />
+    <script defer src="snapshot.js"></script>
+    <script defer src="content.js"></script>
+    <script defer src="atlas.js"></script>
+    <script defer src="internals-content.js"></script>
+    <script defer src="internals.js"></script>
+    <script defer src="vendor/three-0.180.0.min.js"></script>
+    <script defer src="world-content.js"></script>
+    <script defer src="world-scene.js"></script>
+    <script defer src="world.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <aside class="sidebar">
+      <a class="brand" href="#story/click"
+        ><span class="brand-mark" aria-hidden="true">⇄</span
+        ><span>flow<span class="brand-light">atlas</span><small>A CODEBASE FIELD GUIDE</small></span></a
+      >
+      <p class="sidebar-intro">From the big picture<br />to the lines that make it work.</p>
+      <button class="search-trigger" id="open-search"><span>⌕ &nbsp; Find a concept or class</span><kbd>/</kbd></button>
+      <nav aria-label="Explorer navigation" id="navigation"></nav>
+      <div class="sidebar-footer"
+        ><span class="snapshot-dot"></span> Source-backed exploration<span id="revision"></span
+        ><a href="README.md" target="_blank" rel="noopener">About & distribution ↗</a></div
+      >
+    </aside>
+    <div class="workspace">
+      <header class="topbar"
+        ><div
+          ><span class="breadcrumb">VAADIN / FLOW</span><span class="top-divider">/</span
+          ><span id="page-label">Runtime stories</span></div
+        ><div class="top-actions"
+          ><button id="open-search-mobile" class="quiet-button mobile-search" aria-label="Search the explorer"
+            >⌕ Search</button
+          ><span class="offline-badge">● Runs entirely in your browser</span
+          ><button id="share" class="quiet-button">Copy link <span aria-hidden="true">↗</span></button></div
+        ></header
+      >
+      <main id="main" tabindex="-1"></main>
+      <footer class="page-footer"
+        ><span>A map for learning. Read the source for the full contract.</span><span id="snapshot-footer"></span
+      ></footer>
+    </div>
+    <dialog id="search-dialog" class="search-dialog" aria-labelledby="search-title"
+      ><div class="dialog-head"
+        ><h2 id="search-title">Find your way in</h2
+        ><button class="icon-button" data-close="search-dialog" aria-label="Close search">×</button></div
+      ><label class="sr-only" for="global-search">Search concepts, stories, modules and classes</label
+      ><input
+        type="search"
+        id="global-search"
+        placeholder="Try StateTree, push, Binder, routing…"
+        autocomplete="off" /><div id="search-results"></div
+    ></dialog>
+    <dialog id="source-dialog" class="source-dialog" aria-labelledby="source-title"
+      ><div class="dialog-head"
+        ><div><span class="eyebrow">THE ACTUAL IMPLEMENTATION</span><h2 id="source-title"></h2></div
+        ><button class="icon-button" data-close="source-dialog" aria-label="Close source reader">×</button></div
+      ><div class="source-toolbar"
+        ><label class="sr-only" for="source-select">Source file</label
+        ><select id="source-select"></select
+        ><label class="sr-only" for="source-find">Find in this file</label
+        ><input id="source-find" type="search" placeholder="Find in this file…" /><button
+          id="source-next"
+          class="quiet-button"
+          >Next match ↓</button
+        ><span id="source-matches"></span><a id="source-github" target="_blank" rel="noopener">GitHub ↗</a></div
+      ><p id="source-path"></p><div id="source-code" tabindex="0" aria-label="Full source file with line numbers"></div
+      ><div class="source-foot"
+        >Bundled from the pinned repository commit. Source files retain their Apache 2.0 license notices.</div
+      ></dialog
+    >
+    <div class="toast" id="toast" role="status"></div>
+    <noscript
+      >This interactive guide requires JavaScript. The source repository’s
+      <a href="../../guidelines/architecture.md">architecture guide</a> is also available as text.</noscript
+    >
+  </body>
+</html>
