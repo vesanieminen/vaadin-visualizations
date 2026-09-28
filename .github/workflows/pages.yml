@@ -30,6 +30,8 @@ jobs:
           for file in docs/flow-explorer/*.js docs/flow-explorer/vendor/*.js; do
             node --check "$file"
           done
+      - name: Test the runtime simulation
+        run: node --test docs/flow-explorer/tests/*.test.cjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload the standalone explorer

@@ -320,6 +320,7 @@
         runtime.client,
         runtime.clientRoute,
         runtime.form,
+        runtime.draft,
         runtime.saved,
         runtime.orders,
         runtime.stage,
@@ -376,7 +377,11 @@
       );
       ctx.fillStyle = '#233653';
       ctx.font = runtime.form ? 'bold 70px system-ui' : 'bold 115px system-ui';
-      ctx.fillText(runtime.form ? 'Ada' : runtime.clientRoute === '/orders' ? '' : String(runtime.client), 285, 440);
+      ctx.fillText(
+        runtime.form ? runtime.draft || '' : runtime.clientRoute === '/orders' ? '' : String(runtime.client),
+        285,
+        440
+      );
       if (runtime.clientRoute === '/orders' && !runtime.form) {
         ctx.font = '22px ui-monospace, monospace';
         ctx.fillStyle = '#233653';
@@ -559,7 +564,10 @@
         'dblclick',
         (event) => {
           const hit = this.hitTest(event);
-          if (hit) this.focusObject(hit.object.userData.id);
+          if (hit) {
+            this.focusObject(hit.object.userData.id);
+            if (hit.object.userData.part) this.onPart?.(hit.object.userData.id, hit.object.userData.part);
+          }
         },
         { signal }
       );
@@ -589,7 +597,8 @@
               return;
             }
           }
-          this.onSelect(hit.object.userData.id);
+          if (hit.object.userData.part) this.onPart?.(hit.object.userData.id, hit.object.userData.part);
+          else this.onSelect(hit.object.userData.id);
         },
         { signal }
       );
@@ -676,10 +685,8 @@
           spread = spreads[id] || [0, 0, 0];
         group.position.set(...base).addScaledVector(new this.T.Vector3(...spread), this.explode);
         const zone = window.FLOW_WORLD_DETAILS_CONTENT.objects[id].zone;
-        group.visible =
-          (id !== 'second-ui' || this.second) &&
-          (zone !== 'build' || this.buildVisible) &&
-          (!this.focusSet || this.focusSet.has(id));
+        group.visible = (id !== 'second-ui' || this.second) && (zone !== 'build' || this.buildVisible);
+        this.applyLearningVisibility?.(id, group);
         if (id === 'heap') group.scale.y = 1 + this.explode * 0.45;
         if (id === 'session') group.scale.y = 1 + this.explode * 0.48;
         group.traverse((child) => {
@@ -744,6 +751,7 @@
         if (t === 1) this.cameraTween = null;
       }
       this.controls.update();
+      this.updateLearningVisuals?.(dt);
       this.renderer.render(this.scene, this.camera);
       if (this.software) {
         this.projectBrowserScreen();

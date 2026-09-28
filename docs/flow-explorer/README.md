@@ -28,6 +28,8 @@ The distributable runtime consists of `index.html`, `styles.css`, `aura-colors.c
 `internals-content.js`, `world.css`, `world.js`, `world-scene.js`,
 `world-content.js`, `world-details.css`, `world-details.js`,
 `world-details-content.js`, `world-details-scene.js`, `world-details-models.js`,
+`runtime-model.js`, `runtime-inspection.js`, `runtime-scene-learning.js`,
+`runtime-lab.js`, `runtime-lab.css`,
 `vendor/three-0.180.0.min.js`, `vendor/THREE-LICENSE.txt`,
 `snapshot.js`, `README.md`, and `LICENSE`. The Python
 generators are only needed when refreshing the bundled source snapshot.
@@ -44,13 +46,13 @@ shared palette.
 
 - Six step-by-step stories: clicks, bootstrap, navigation, background updates,
   buffered form binding, and frontend builds.
-- The original **3D runtime lab** at `#world`: a spatial overview of the browser,
-  network, Java runtime, session lock and build pipeline, with six experiments.
-- A separate **Detailed 3D lab** at `#world-details`: inspect DOM nesting, Java
-  fields and references, thread stacks and application records. Run seven
-  experiments across 27 concepts and 55 steps, with double-click close-ups and
-  interactive application controls. Both views are linked from the navigation
-  and from each other's header.
+- The **3D runtime lab** at `#world`: the original spatial scene, with a guided
+  four-stage journey. Concepts appear as execution reaches them. Persistence and
+  build tooling appear when relevant.
+- The **Detailed 3D lab** at `#world-details`: inspect fields, references, stack
+  frames, messages and stored records. Both labs use the same deterministic
+  application model, with nine experiments. **Inspect this step** and **Return to
+  overview** carry the complete history, selected object and paused position.
 - Play/pause, replay, previous/next step, direct step selection and playback speed.
 - Selectable architecture nodes and concept/class labels.
 - An **Inside** tab for every story node: interactive composition diagrams,
@@ -98,52 +100,67 @@ is MIT-licensed; its license and reproducible bundling instructions are in
 `vendor/`. No third-party service receives data from the visualization.
 
 Drag the 3D scene to orbit, scroll/pinch to zoom, or use camera presets.
-In the **Detailed 3D lab**, double-click a shape or its label to focus it. The inspector's **Zoom into this
-object** button and Enter on the scene provide keyboard alternatives. Close-ups
-isolate the object and, for heap/session/UI containers, their contents. Use
-**Back to whole system** to restore the overview. Focus is preserved in shared links.
+In either lab, double-click a shape or its label to focus it. The inspector's
+**Open in 3D** button and Enter on the scene provide keyboard alternatives. Close-ups
+show the object and its contents, with surrounding context faded. Use
+**Whole system** to restore the overview. Focus is preserved in shared links.
 
-In the detailed view, shapes show DOM nesting, state-node IDs, Java object fields and references,
-request/worker call frames, ordered queues, and frontend generation stages.
-Object fields and stack contents update with the experiment. Bright arrows and
-labels show execution or protocol transfer; muted lines show object relationships.
-These are schematic objects and frames, not literal JVM layouts or stack traces.
+Both labs keep the scene, playback, explanation and timeline together. The
+inspector is collapsible. The overview introduces interaction, request, Java
+changes and browser update as four expandable stages. The detailed scene reveals
+text and internals as you approach objects. Double-click an object (or press Enter
+on the focused canvas) to open it. Parent boundaries and neighbours remain faintly
+visible; breadcrumbs lead back out. Click a detailed card or stack slab to inspect
+that specific part. Fields, children and incoming references are also selectable
+in the flat inspector. Source and package links remain available offline.
 
-In the detailed view, the monitor's Counter, Orders and Profile links, action
-button, Reconnect and Background update controls operate the simulation. The inspector offers the same
-controls without needing to click the small screen. **Load orders** follows a
-DataProvider through an illustrative application repository, returning three
-example records. The database schema and repository operation are examples of
-application code, not features supplied by Flow. Profile binding updates a bean;
-it does not implicitly write to that database.
+**Operate the application** opens a readable interactive application panel:
 
-In both views, with the canvas focused, arrow keys rotate the camera, `+`/`-`
-zoom and `R`/Home resets it.
-Every object is also accessible through the inspector's selector. **Open up the
-system** separates its layers; **Add a second tab** adds an independent UI under
-the same session. **Hold session lock** pauses work at its acquisition boundary.
-Release it to continue. **Ride the packet** follows the current journey with the
-camera; manually moving the camera cancels the ride. Playback pauses on source
-or search dialogs and when the page is hidden. Reduced motion disables packet
-travel and camera interpolation. Routes preserve the selected experiment, step,
-object, camera preset, layer separation and second UI; playback never auto-starts
-from a link. WebGL resources and event listeners are released when leaving the
-lab.
+- Repeated counter clicks accumulate, including clicks queued during another
+  operation. The live strip shows Java, server text, client state and DOM values
+  independently. **Trace the label** highlights their correspondence.
+- Profile inputs accept edits. An empty name fails buffered validation. A valid
+  name updates the bean; **Save accepted bean to database** explicitly writes
+  application data. The live strip compares the draft, bean and stored value.
+- Orders loads example records through a DataProvider and repository. Edit order
+  #1001 and save it; a negative total is rejected without changing storage.
+- Open a second simulated browser tab to operate an independent UI in the same
+  session. **Hold session lock** prevents queued work from entering the mutation
+  boundary. Release it and continue playback. **Network latency** changes how
+  long requests and responses remain in flight.
+- Background work enters an illustrated worker stack, submits UI.access, acquires
+  the session lock and pushes changes. Heap identities survive returned frames.
 
-The miniature browser is a simulated application, not a separately running
-Vaadin backend. Heap frames show logical ownership, not actual JVM regions or
-object allocation sizes. Thread cards represent execution contexts rather than
-measured thread dumps. The optional database represents application-owned
-persistence; Flow does not automatically persist components or Binder beans.
-The build platform represents a different phase from request-time execution.
+The inspector offers **Structure**, **Changes** (before/after values, cause and
+next step), and **Messages** (illustrative RPC, UIDL and repository payloads).
+Thread frames expose local references to the relevant UI and heap objects.
+Yellow links trace related representations; thin muted lines are references;
+orange RPC/query arrows and blue UIDL arrows distinguish transport from green
+Java execution. Changes highlight the affected cards.
 
-These are interactive simulations of real code paths, not telemetry from a
-running Vaadin application. Times are reading intervals, not latency measurements.
-Packet examples are explicitly illustrative. Stories follow selected successful
-paths; they call out important alternatives, but do not model every branch,
-transport retry, error, security check or deployment option. UI push is assumed
-to be enabled and automatic in the push story. The Binder story uses buffered
-`readBean`/`writeBeanIfValid` semantics.
+Previous/next and **Execution history** restore entire immutable snapshots,
+including both tabs, queues, locks, frames, messages and persisted example data.
+Editing or submitting from an earlier snapshot branches the history. Share links
+encode the action log, cursor and selection, including entered example values.
+Reloading a shared link restores it without autoplay. Reset lab starts a fresh
+application. In both views, canvas arrow keys orbit, `+`/`-` zoom, and `R`/Home
+resets the camera. Experiments & camera contains presets, layer separation and
+Ride the packet. Manual camera movement cancels the ride.
+Playback pauses on source/search dialogs and when the page is hidden. Reduced
+motion disables camera interpolation and packet travel. Resources and listeners
+are disposed when leaving either lab.
+
+This is an executable teaching model, not a running Vaadin backend, traffic
+capture or JVM debugger. Identities, frames, schema and messages are illustrative;
+wire payloads are simplified and the queue processes work sequentially rather
+than emulating a servlet scheduler. Nested frames show logical object ownership,
+not JVM allocation regions or physical memory sizes. The example retains
+per-tab application values when navigating and models reconnecting to the same
+UI. Push assumes automatic push. The optional database belongs to the application;
+Flow does not automatically persist components or Binder beans. Build tooling
+represents a separate phase before deployment. Reading intervals are added to
+simulated network delays. Full retry, security and deployment behaviour remains
+in the linked source contracts.
 
 Repository relationships are extracted from declared direct `com.vaadin`
 dependencies, aggregated into top-level families. The original card map includes
@@ -200,6 +217,11 @@ node --check docs/flow-explorer/world-details-scene.js
 node --check docs/flow-explorer/world-details-models.js
 node --check docs/flow-explorer/world-details-content.js
 node --check docs/flow-explorer/world-content.js
+node --check docs/flow-explorer/runtime-lab.js
+node --check docs/flow-explorer/runtime-model.js
+node --check docs/flow-explorer/runtime-inspection.js
+node --check docs/flow-explorer/runtime-scene-learning.js
+node --test docs/flow-explorer/tests/*.test.cjs
 ```
 
 Bundled Flow sources retain their Apache 2.0 notices. See `LICENSE`.

@@ -449,7 +449,14 @@
       this.paintBrowser({ client: 7, server: 7, clientRoute: '/counter', route: '/counter' });
     }
     paintBrowser(runtime) {
-      const signature = JSON.stringify([runtime.client, runtime.clientRoute, runtime.form, runtime.saved, this.second]);
+      const signature = JSON.stringify([
+        runtime.client,
+        runtime.clientRoute,
+        runtime.form,
+        runtime.draft,
+        runtime.saved,
+        this.second
+      ]);
       if (signature === this.screenSignature) return;
       this.screenSignature = signature;
       const ctx = this.screenCanvas.getContext('2d'),
@@ -501,7 +508,7 @@
       ctx.fillStyle = '#233653';
       ctx.font = runtime.form ? 'bold 70px system-ui' : 'bold 115px system-ui';
       ctx.fillText(
-        runtime.form ? 'Ada' : runtime.clientRoute === '/orders' ? 'Orders' : String(runtime.client),
+        runtime.form ? runtime.draft || '' : runtime.clientRoute === '/orders' ? 'Orders' : String(runtime.client),
         285,
         440
       );
@@ -509,7 +516,11 @@
       ctx.fillRect(285, 482, 346, 76);
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 27px system-ui';
-      ctx.fillText(runtime.form ? (runtime.saved ? 'Saved ✓' : 'Save profile') : 'Click me  +1', 325, 531);
+      ctx.fillText(
+        runtime.form ? 'Validate profile' : runtime.clientRoute === '/orders' ? 'Load orders' : 'Click me  +1',
+        325,
+        531
+      );
       ctx.fillStyle = '#6b7a92';
       ctx.font = '20px system-ui';
       ctx.fillText('SIMULATED APPLICATION  ·  Click the blue button', 245, 685);
@@ -622,6 +633,15 @@
       const canvas = this.renderer.domElement,
         signal = this.abort.signal;
       canvas.addEventListener(
+        'dblclick',
+        (event) => {
+          clearTimeout(this.actionTimer);
+          const hit = this.hitTest(event);
+          if (hit) this.focusObject(hit.object.userData.id);
+        },
+        { signal }
+      );
+      canvas.addEventListener(
         'pointerdown',
         (event) => {
           this.down = { x: event.clientX, y: event.clientY };
@@ -635,7 +655,14 @@
           const hit = this.hitTest(event);
           if (!hit) return;
           if (hit.object.userData.screen && hit.uv.x > 0.23 && hit.uv.x < 0.54 && hit.uv.y > 0.26 && hit.uv.y < 0.38) {
-            this.onAction();
+            clearTimeout(this.actionTimer);
+            this.actionTimer = setTimeout(
+              () =>
+                this.onAction(
+                  this.runtime?.form ? 'binding' : this.runtime?.clientRoute === '/orders' ? 'data' : 'click'
+                ),
+              400
+            );
             return;
           }
           this.onSelect(hit.object.userData.id);
@@ -653,6 +680,7 @@
         'keydown',
         (event) => {
           if (event.target !== canvas) return;
+          if (event.key === 'Enter') this.focusObject(this.selected);
           if (event.key === 'r' || event.key === 'Home') {
             event.preventDefault();
             this.setView('overview');
@@ -722,6 +750,7 @@
         group.position.set(...base).addScaledVector(new this.T.Vector3(...spread), this.explode);
         const zone = window.FLOW_WORLD_CONTENT.objects[id].zone;
         group.visible = (id !== 'second-ui' || this.second) && (zone !== 'build' || this.buildVisible);
+        this.applyLearningVisibility?.(id, group);
         if (id === 'heap') group.scale.y = 1 + this.explode * 0.45;
         if (id === 'session') group.scale.y = 1 + this.explode * 0.48;
         group.traverse((child) => {
@@ -780,6 +809,7 @@
         if (t === 1) this.cameraTween = null;
       }
       this.controls.update();
+      this.updateLearningVisuals?.(dt);
       this.renderer.render(this.scene, this.camera);
       if (this.software) this.projectBrowserScreen();
       this.positionLabels();
@@ -896,6 +926,7 @@
       this.disposed = true;
       cancelAnimationFrame(this.frame);
       this.abort.abort();
+      clearTimeout(this.actionTimer);
       this.resizeObserver.disconnect();
       this.controls.dispose();
       const geometries = new Set(),

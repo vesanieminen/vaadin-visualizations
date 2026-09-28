@@ -133,7 +133,7 @@
         plate(
           'Heap · surviving objects',
           (r) => [
-            'session → UI #1 → view',
+            'session → UI #' + r.selectedTab + ' → view',
             'view.counter = ' + r.server,
             'view → Button + Span',
             'UIInternals → StateTree'
@@ -157,7 +157,9 @@
     }
     if (id === 'ui') {
       this.box(group, [8.5, 0.06, 6.6], [0, -0.1, 0.5], color, { opacity: 0.12 });
-      plate('UI #1 · UIInternals', ['owns StateTree', 'one browser tab'], [0, 0.1, -2.5], 3.2, { height: 1 });
+      plate((r) => `UI #${r.selectedTab} · UIInternals`, ['owns StateTree', 'one browser tab'], [0, 0.1, -2.5], 3.2, {
+        height: 1
+      });
       group.userData.bounds = [9, 2, 7];
       group.userData.labelOffset.set(-4, 0.1, 2.6);
       return;
@@ -167,7 +169,7 @@
         'DOM · actual elements',
         (r) =>
           r.form
-            ? ['<form>', '  <vaadin-text-field>', '    value = Ada', '  <vaadin-button> Save']
+            ? ['<form>', '  <vaadin-text-field>', '    value = ' + r.draft, '  <vaadin-button> Save']
             : r.clientRoute === '/orders'
               ? ['<div>', '  <vaadin-grid>', '    rows = ' + (r.orders?.length || 0), '  </vaadin-grid>']
               : ['<div>', '  <vaadin-button>', '    click listener', '  <span> ' + r.client + ' </span>'],
@@ -210,7 +212,7 @@
                 : '#7 · button',
         (r) =>
           r.form
-            ? ['value = Ada']
+            ? ['value = ' + r.draft]
             : r.route === '/orders'
               ? ['items: ' + (r.orders?.length || 0)]
               : java
@@ -228,7 +230,7 @@
             ? ['name = ' + r.bean]
             : java && r.route === '/orders'
               ? ['fetch(offset, limit)']
-              : ['text = "' + (second ? 7 : id === 'client-tree' ? r.client : r.server) + '"'],
+              : ['text = "' + (second ? r.secondValue : id === 'client-tree' ? r.clientState : r.serverText) + '"'],
         [1.05, -0.05, 0.25],
         1.85,
         { height: 0.85, key: 'value' }
@@ -252,7 +254,7 @@
         (r) => [
           'ElementData  → span',
           'ElementChildrenList → text',
-          'TextNodeMap value = ' + r.server,
+          'TextNodeMap value = ' + r.serverText,
           r.dirty ? '● DIRTY · awaiting encode' : '○ clean'
         ],
         [0, 0.6, 0],
@@ -316,34 +318,23 @@
       ['Request stack', 'Worker / access stack'].forEach((title, i) => {
         plate(
           title,
-          (r) =>
-            i
-              ? ['worker', 'access'].includes(r.thread)
-                ? [
-                    'TOP · application task',
-                    r.thread === 'access' ? 'UI.access callback' : 'compute result = 8',
-                    'local ui → UI #1',
-                    r.locked ? 'session lock: held' : 'UI mutation needs lock'
-                  ]
-                : ['no active task', 'frames have returned', 'no dedicated UI thread']
-              : r.thread !== 'idle' && !['worker', 'access'].includes(r.thread)
-                ? [
-                    r.thread === 'listener'
-                      ? 'TOP · ClickListener'
-                      : r.thread === 'fetch'
-                        ? 'TOP · DataProvider.fetch'
-                        : 'TOP · RPC handler',
-                    'ServerRpcHandler',
-                    'VaadinService',
-                    'local ui → UI #1'
-                  ]
-                : ['no active request', 'frames have returned', 'heap objects remain'],
+          (r) => {
+            const frames = r.stacks?.[i ? 'worker' : 'request'] || [];
+            return frames.length
+              ? [...frames].reverse().map((f, j) => (j === 0 ? 'TOP · ' : '') + f.method)
+              : ['no active frames', 'heap objects remain'];
+          },
           [-1.5 + i * 3.05, 0.65, 0],
           2.9,
           { height: 2.5 }
         );
-        for (let j = 0; j < 4; j++)
-          this.box(group, [2.75, 0.08, 0.9], [-1.5 + i * 3.05, -0.7 - j * 0.14, 0], i ? c.purple : color);
+        this.stackSlabs ||= {};
+        this.stackSlabs[i ? 'worker' : 'request'] = [];
+        for (let j = 0; j < 4; j++) {
+          const slab = this.box(group, [2.75, 0.18, 0.9], [-1.5 + i * 3.05, -0.7 + j * 0.25, 0.35], color);
+          slab.userData.part = (i ? 'worker-' : 'request-') + j;
+          this.stackSlabs[i ? 'worker' : 'request'].push(slab);
+        }
       });
       group.userData.bounds = [6.4, 3.5, 1.5];
       group.userData.labelOffset.y = 2.25;
@@ -359,9 +350,15 @@
     }
     if (id === 'binder') {
       ['Field', 'Convert', 'Validate'].forEach((title, i) =>
-        plate(title, [i === 0 ? '"Ada"' : i === 1 ? 'String → T' : 'valid?'], [(i - 1) * 1.25, 0.3, 0], 1.15, {
-          height: 1.1
-        })
+        plate(
+          title,
+          (r) => [i === 0 ? r.draft : i === 1 ? 'String → T' : r.validation || 'valid?'],
+          [(i - 1) * 1.25, 0.3, 0],
+          1.15,
+          {
+            height: 1.1
+          }
+        )
       );
       link([-1.7, -0.5, 0], [1.8, -0.5, 0]);
       group.userData.bounds = [4.2, 2, 1.5];
@@ -386,9 +383,7 @@
         'orders · example records',
         (r) => [
           'id    customer    total',
-          '1001  Ada         €120',
-          '1002  Grace        €85',
-          '1003  Linus       €210',
+          ...(r.database?.orders || []).map((o) => o.id + '  ' + o.customer + '  €' + o.total),
           r.queried ? 'SELECT → 3 rows returned' : 'read via your repository'
         ],
         [2.9, 0.6, 0],
@@ -448,7 +443,8 @@
     for (const panel of this.modelPanels) {
       const rows = typeof panel.rows === 'function' ? panel.rows(runtime) : panel.rows;
       const title = typeof panel.title === 'function' ? panel.title(runtime) : panel.title;
-      const signature = JSON.stringify([title, rows]);
+      const changed = (runtime.changes || []).some((c) => c.target === panel.group.userData.id);
+      const signature = JSON.stringify([title, rows, changed]);
       if (signature === panel.signature) continue;
       panel.signature = signature;
       const ctx = panel.canvas.getContext('2d'),
@@ -456,7 +452,7 @@
         h = panel.canvas.height;
       ctx.fillStyle = '#112737';
       ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = panel.color;
+      ctx.fillStyle = changed ? '#ffc97d' : panel.color;
       ctx.fillRect(0, 0, 8, h);
       ctx.fillStyle = '#1e3a4b';
       ctx.fillRect(8, 0, w - 8, h * 0.28);
@@ -473,7 +469,11 @@
           ctx.lineWidth = 2;
           ctx.strokeRect(i ? 45 : 22, y - rowSize * 0.8, w - (i ? 75 : 45), rowSize * 1.28);
         }
-        ctx.fillStyle = panel.key === 'dirty' && runtime.dirty && i === rows.length - 1 ? '#ffc97d' : '#c7dfe9';
+        ctx.fillStyle =
+          (changed && (i === 0 || panel.key === 'value')) ||
+          (panel.key === 'dirty' && runtime.dirty && i === rows.length - 1)
+            ? '#ffc97d'
+            : '#c7dfe9';
         ctx.fillText(row, panel.draw === 'dom' ? (i ? 59 : 33) : 26, y, w - 55);
       });
       panel.texture.needsUpdate = true;
@@ -507,6 +507,7 @@
         den = dx1 * dy2 - dx2 * dy1;
       let visible =
         panel.group.visible &&
+        panel.face.visible &&
         this.camera.position.z > origin.z &&
         Math.abs(den) > 0.01 &&
         corners.every((p) => p.z > 0 && p.z < 1);
@@ -650,8 +651,8 @@
       const curve = new this.T.CatmullRomCurve3([a, mid, b]);
       item.line.geometry.setFromPoints(curve.getPoints(24));
       const visible = this.groups.get(item.from).visible && this.groups.get(item.to).visible;
-      item.line.visible = visible && !this.focused;
-      item.arrow.visible = visible && !this.focused;
+      item.line.visible = visible && (!this.focused || (this.focusSet.has(item.from) && this.focusSet.has(item.to)));
+      item.arrow.visible = item.line.visible;
       item.line.material.opacity = item.index < this.journeyIndex ? 0.35 : 0.12;
       item.arrow.material.opacity = item.index < this.journeyIndex ? 0.65 : 0.2;
       this.placeArrow(item.arrow, curve, 0.78);

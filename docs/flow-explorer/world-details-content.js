@@ -109,7 +109,7 @@
       'push/app'
     ),
     ui: object(
-      'UI #1 & UIInternals',
+      'UI & UIInternals',
       'server',
       'The server-side root for this browser UI',
       'UI is the server-side root for this particular UI instance. UIInternals contains its StateTree and synchronization/lifecycle data. A second browser tab normally initializes a distinct UI, even if it shares the session.',
@@ -121,7 +121,7 @@
       'UI #2 — another browser tab',
       'server',
       'A separate tree under the same session lock',
-      'This optional miniature represents another UI in the same session. Its components and state tree are independent. The example counter update belongs to UI #1; the second UI does not inherit those changes automatically.',
+      'This optional miniature represents another UI in the same session. Its components and state tree are independent. Updates belong to the UI that triggered them; the other UI does not inherit those changes automatically.',
       [
         'Independent component instances',
         'Independent StateTree and node IDs',
