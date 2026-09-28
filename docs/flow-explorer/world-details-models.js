@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   // These are diagrams made from runtime structures, not physical server parts.
-  const P = window.FLOW_RUNTIME_SCENE.prototype;
+  const P = window.FLOW_RUNTIME_DETAILS_SCENE.prototype;
   const roleNames = {
     dom: 'Nested HTML elements',
     'client-tree': 'Node IDs → browser state',
@@ -105,7 +105,7 @@
   P.createModel = function (group, id) {
     const T = this.T,
       c = this.palette,
-      zone = window.FLOW_WORLD_CONTENT.objects[id].zone;
+      zone = window.FLOW_WORLD_DETAILS_CONTENT.objects[id].zone;
     const color =
       zone === 'browser'
         ? c.blue
@@ -534,7 +534,7 @@
     const group = this.groups.get(id);
     if (!group) return;
     if (id === 'second-ui') this.second = true;
-    if (window.FLOW_WORLD_CONTENT.objects[id].zone === 'build') this.buildVisible = true;
+    if (window.FLOW_WORLD_DETAILS_CONTENT.objects[id].zone === 'build') this.buildVisible = true;
     group.visible = true;
     clearTimeout(this.actionTimer);
     this.follow = false;
@@ -608,8 +608,8 @@
     const current = steps[index],
       previous = steps[index - 1];
     if (previous) {
-      const from = window.FLOW_WORLD_CONTENT.objects[previous.node],
-        to = window.FLOW_WORLD_CONTENT.objects[current.node];
+      const from = window.FLOW_WORLD_DETAILS_CONTENT.objects[previous.node],
+        to = window.FLOW_WORLD_DETAILS_CONTENT.objects[current.node];
       const crossing = previous.node === 'network' || current.node === 'network';
       this.transferLabel.textContent =
         from.zone === 'browser' && to.zone === 'server'

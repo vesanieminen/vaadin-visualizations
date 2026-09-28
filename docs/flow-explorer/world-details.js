@@ -1,7 +1,7 @@
 /* Copyright 2026 Vaadin Ltd. Licensed under the Apache License, Version 2.0. */
 (() => {
   'use strict';
-  const { objects, scenarios } = window.FLOW_WORLD_CONTENT;
+  const { objects, scenarios } = window.FLOW_WORLD_DETAILS_CONTENT;
   const snapshot = window.FLOW_SNAPSHOT;
   const esc = (value) =>
     String(value).replace(
@@ -44,7 +44,8 @@
     });
     if (state.explode) params.set('explode', Math.round(state.explode * 100));
     if (state.second) params.set('second', '1');
-    history.replaceState(null, '', '#world?' + params);
+    if (state.focused) params.set('focus', state.focused);
+    history.replaceState(null, '', '#world-details?' + params);
   }
   function render(query) {
     dispose();
@@ -69,8 +70,8 @@
     };
     abort = new AbortController();
     elapsed = 0;
-    $('#main').innerHTML = `<section class="runtime-world">
-      <div class="world-hero"><div><span class="eyebrow">FLOW RUNTIME LAB</span><h1>One application. Two living worlds.</h1><p>Operate the system. Follow a packet. Open up the memory.</p><a class="world-view-link" href="#world-details">Explore the detailed 3D lab →</a></div><span class="world-model-badge"><i></i> INTERACTIVE SIMULATION<br><small>Source-backed model · not live telemetry</small></span></div>
+    $('#main').innerHTML = `<section class="runtime-world runtime-world--detailed">
+      <div class="world-hero"><div><span class="eyebrow">DETAILED 3D RUNTIME LAB</span><h1>Inside the running application.</h1><p>Inspect objects, follow execution, and operate the browser.</p><a class="world-view-link" href="#world">← Back to the 3D runtime lab</a></div><span class="world-model-badge"><i></i> INTERACTIVE SIMULATION<br><small>Source-backed model · not live telemetry</small></span></div>
       <section class="world-shell" aria-label="Interactive 3D runtime simulation">
         <div class="world-topbar"><div class="world-cameras" role="group" aria-label="Camera views">${[
           ['overview', '◈', 'Whole system'],
@@ -86,7 +87,7 @@
           .join(
             ''
           )}</div><button id="world-caption-toggle" class="world-icon-button" aria-label="Toggle scene narration" aria-pressed="true" title="Show or hide narration">ⓘ</button><button id="world-fullscreen" class="world-icon-button" title="Expand simulation" aria-label="Toggle fullscreen">⛶</button></div>
-        <div class="world-simulation"><div class="world-viewport"><div class="world-scene-caption"><span><i class="world-dot"></i> THE RUNNING SYSTEM</span><span id="world-status">Ready to run</span></div><div id="world-canvas"></div><div id="world-labels"></div><div id="world-live-caption" class="world-live-caption"></div><div class="world-camera-help">Drag to orbit · Scroll to zoom · Click any object</div><div class="world-view-controls"><button id="world-zoom-in" aria-label="Zoom into the scene">+</button><button id="world-zoom-out" aria-label="Zoom out of the scene">−</button><button data-world-view="overview" aria-label="Reset camera">⌂</button></div><div class="world-render-failure" id="world-render-failure" hidden></div><div class="world-legend"><span><i class="browser"></i>Browser</span><span><i class="server"></i>Java runtime</span><span><i class="build"></i>Build time</span><span><i class="packet"></i>Current journey</span></div></div>
+        <div class="world-simulation"><div class="world-viewport"><div class="world-scene-caption"><span><i class="world-dot"></i> THE RUNNING SYSTEM</span><span id="world-status">Ready to run</span></div><div id="world-canvas"></div><div id="world-labels"></div><div id="world-live-caption" class="world-live-caption"></div><div class="world-camera-help">Drag to orbit · Double-click to focus · Enter focuses selection</div><div id="world-focus-status" class="world-focus-status" hidden></div><div class="world-view-controls"><button id="world-zoom-in" aria-label="Zoom into the scene">+</button><button id="world-zoom-out" aria-label="Zoom out of the scene">−</button><button data-world-view="overview" aria-label="Reset camera">⌂</button></div><div class="world-render-failure" id="world-render-failure" hidden></div><div class="world-legend"><span><i class="browser"></i>Browser</span><span><i class="server"></i>Java runtime</span><span><i class="build"></i>Build time</span><span><i class="packet"></i>Arrow = execution</span><span>Thin line = reference</span></div></div>
           <aside id="world-inspector" class="world-inspector" aria-label="Selected runtime object"></aside></div>
         <div class="world-experiments"><label class="world-explode"><span>Open up the system</span><input id="world-explode" type="range" min="0" max="100" value="${state.explode * 100}" aria-label="Explode the runtime layers"><small>Assembled → Exploded</small></label><label><input id="world-second" type="checkbox" ${state.second ? 'checked' : ''}> Add a second tab</label><label title="Simulate another operation holding this session’s lock"><input id="world-hold" type="checkbox"> Hold session lock</label><label><input id="world-follow" type="checkbox"> Ride the packet</label><label><input id="world-build-visible" type="checkbox" checked> Build stage</label></div>
         <div id="world-state" class="world-state" aria-label="Simulated runtime state"></div>
@@ -123,13 +124,40 @@
       { signal: abort.signal }
     );
     try {
-      scene = new window.FLOW_RUNTIME_SCENE($('#world-canvas'), $('#world-labels'), selectObject, runApplication);
+      scene = new window.FLOW_RUNTIME_DETAILS_SCENE(
+        $('#world-canvas'),
+        $('#world-labels'),
+        selectObject,
+        runApplication
+      );
       scene.setOptions({ explode: state.explode, second: state.second });
       scene.onManualCamera = () => {
         state.follow = false;
         $('#world-follow').checked = false;
       };
       if (state.view !== 'overview') scene.setView(state.view);
+      scene.onFocusReset = () => {
+        state.focused = null;
+        $('#world-focus-status').hidden = true;
+        saveUrl();
+      };
+      scene.onFocus = (id) => {
+        state.focused = id;
+        $('.world-viewport').classList.add('is-focused');
+        if (id === 'second-ui') {
+          state.second = true;
+          $('#world-second').checked = true;
+        }
+        if (objects[id].zone === 'build') {
+          state.buildVisible = true;
+          $('#world-build-visible').checked = true;
+        }
+        saveUrl();
+        const status = $('#world-focus-status');
+        status.hidden = false;
+        status.innerHTML = `<span>Inside ${esc(objects[id].title)}</span><button data-world-view="overview">Back to whole system ↗</button>`;
+        document.querySelectorAll('[data-world-view]').forEach((el) => el.setAttribute('aria-pressed', 'false'));
+      };
       scene.onContextLost = () => {
         contextLost = true;
         pause();
@@ -143,6 +171,7 @@
       );
     }
     updateAll();
+    if (Object.hasOwn(objects, params.get('focus'))) scene?.focusObject(params.get('focus'));
     lastTick = performance.now();
     frame = requestAnimationFrame((t) => tick(t));
   }
@@ -222,14 +251,21 @@
         )
         .join(
           ''
-        )}</select></div><span class="world-zone-tag">${esc(item.zone.toUpperCase())}</span><h2>${esc(item.title)}</h2><p class="world-inspector-subtitle">${esc(item.subtitle)}</p><p>${esc(item.body)}</p><h3>WHAT IS INSIDE</h3><ul>${item.contains.map((text) => `<li>${esc(text)}</li>`).join('')}</ul><div class="world-object-state"><span>SIMULATED SNAPSHOT</span>${facts.map(([key, value]) => `<div><small>${esc(key)}</small><code>${esc(value)}</code></div>`).join('')}</div><div class="world-inspect-links">${item.inside ? `<a class="world-inside-link" href="#inside/${item.inside}/0">Explore the internals ↗</a>` : ''}${source ? `<button data-source="${item.source}">Read ${esc(source.name)} ↗</button>` : ''}${packageUrl ? `<a href="${esc(packageUrl)}">Find it in the package map →</a>` : ''}<a href="#story/${getScenario().story}">Follow the detailed journey →</a></div>`;
+        )}</select><button id="world-focus-object" class="world-focus-button">⌕ Zoom into this object</button></div><span class="world-zone-tag">${esc(item.zone.toUpperCase())}</span><h2>${esc(item.title)}</h2><p class="world-inspector-subtitle">${esc(item.subtitle)}</p><p>${esc(item.body)}</p>${state.selected === 'browser' ? `<div class="world-app-actions"><span>TRY THE APPLICATION</span><button data-world-app="click">Click +1</button><button data-world-app="navigation">Open orders</button><button data-world-app="profile">Edit profile</button><button data-world-app="push">Background update</button><button data-world-app="data">Fetch orders</button><button data-world-app="startup">Reconnect</button></div>` : ''}<h3>WHAT IS INSIDE</h3><ul>${item.contains.map((text) => `<li>${esc(text)}</li>`).join('')}</ul><div class="world-object-state"><span>SIMULATED SNAPSHOT</span>${facts.map(([key, value]) => `<div><small>${esc(key)}</small><code>${esc(value)}</code></div>`).join('')}</div><div class="world-inspect-links">${item.inside ? `<a class="world-inside-link" href="#inside/${item.inside}/0">Explore the internals ↗</a>` : ''}${source ? `<button data-source="${item.source}">Read ${esc(source.name)} ↗</button>` : ''}${packageUrl ? `<a href="${esc(packageUrl)}">Find it in the package map →</a>` : ''}<a href="#story/${getScenario().story}">Follow the detailed journey →</a></div>`;
     if (restoreFocus) $('#world-object').focus({ preventScroll: true });
   }
   function updateAll() {
     const scenario = getScenario(),
       step = scenario.steps[state.step],
       runtime = getRuntime();
-    scene?.setRuntime({ ...runtime, locked: state.hold || runtime.locked, waiting: state.waiting });
+    scene?.setJourney(scenario.steps, state.step);
+    scene?.setRuntime({
+      ...runtime,
+      scenario: state.scenario,
+      stage: step.node,
+      locked: state.hold || runtime.locked,
+      waiting: state.waiting
+    });
     scene?.setSelected(state.selected);
     scene?.setPhase(
       state.step ? scenario.steps[state.step - 1].node : null,
@@ -311,11 +347,21 @@
     );
     if ($('#world-play')) updateAll();
   }
-  function runApplication() {
-    state.scenario = getRuntime().form ? 'binding' : 'click';
+  function runApplication(action) {
+    state.scenario =
+      action === 'profile'
+        ? 'binding'
+        : action === 'counter'
+          ? 'click'
+          : Object.hasOwn(scenarios, action)
+            ? action
+            : getRuntime().form
+              ? 'binding'
+              : 'click';
     $('#world-scenario').value = state.scenario;
     state.selected = 'browser';
-    state.playing = true;
+    if (scene?.focused && scene.focused !== 'browser') scene.focusObject('browser');
+    state.playing = action !== 'profile' && action !== 'counter';
     state.waiting = false;
     setStep(0);
   }
@@ -341,7 +387,12 @@
   async function handleClick(event) {
     const button = event.target.closest('button');
     if (!button) return;
-    if (button.dataset.worldView) {
+    if (button.id === 'world-focus-object') {
+      scene?.focusObject(state.selected);
+    } else if (button.dataset.worldApp) {
+      runApplication(button.dataset.worldApp);
+    } else if (button.dataset.worldView) {
+      $('#world-focus-status').hidden = true;
       state.view = button.dataset.worldView;
       state.follow = false;
       $('#world-follow').checked = false;
@@ -426,6 +477,10 @@
       updateAll();
     } else if (el.id === 'world-follow') {
       state.follow = el.checked;
+      if (el.checked) {
+        state.focused = null;
+        $('#world-focus-status').hidden = true;
+      }
       scene?.setOptions({ follow: state.follow });
     } else if (el.id === 'world-build-visible') {
       state.buildVisible = el.checked;
@@ -440,5 +495,5 @@
     scene = null;
     state = null;
   }
-  window.FLOW_WORLD = { render, dispose, pause };
+  window.FLOW_WORLD_DETAILS = { render, dispose, pause };
 })();

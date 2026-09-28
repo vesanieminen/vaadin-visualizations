@@ -70,6 +70,7 @@
     $('#navigation').innerHTML =
       `<div class="nav-group">FOLLOW THE FLOW</div>${data.scenes.map((scene, i) => `<a href="#story/${scene.id}" class="nav-item ${['story', 'inside'].includes(state.view) && state.scene === scene.id ? 'active' : ''}" ${['story', 'inside'].includes(state.view) && state.scene === scene.id ? 'aria-current="page"' : ''}><span class="nav-num">0${i + 1}</span>${scene.short}<span class="arrow">↗</span></a>`).join('')}<div class="nav-group">GO A LEVEL DEEPER</div>${[
         ['world', '◉', '3D runtime lab'],
+        ['world-details', '⌕', 'Detailed 3D lab'],
         ['modules', '⊞', 'Repository map'],
         ['atlas', '◈', 'Dependency atlas'],
         ['guide', '◇', 'Concept field guide'],
@@ -83,6 +84,7 @@
     $('#page-label').textContent = {
       story: 'Runtime stories',
       world: '3D runtime lab',
+      'world-details': 'Detailed 3D lab',
       modules: 'Repository map',
       atlas: 'Dependency atlas',
       inside: 'Inside the concept',
@@ -319,9 +321,12 @@
     resizeObserver?.disconnect();
     window.FLOW_ATLAS.dispose();
     window.FLOW_WORLD.dispose();
+    window.FLOW_WORLD_DETAILS.dispose();
     const parts = location.hash.slice(1).split('?')[0].split('/');
     const params = new URLSearchParams(location.hash.split('?')[1]);
-    const view = ['story', 'world', 'modules', 'atlas', 'inside', 'guide', 'sources'].includes(parts[0])
+    const view = ['story', 'world', 'world-details', 'modules', 'atlas', 'inside', 'guide', 'sources'].includes(
+      parts[0]
+    )
       ? parts[0]
       : 'story';
     state.view = view;
@@ -335,6 +340,8 @@
       renderStory();
     } else if (view === 'world') {
       window.FLOW_WORLD.render(params);
+    } else if (view === 'world-details') {
+      window.FLOW_WORLD_DETAILS.render(params);
     } else if (view === 'inside') {
       state.scene = data.scenes.some((scene) => scene.id === parts[1]) ? parts[1] : 'click';
       state.anatomyTitle = window.FLOW_INTERNALS.render(parts[1], parts[2], parts[3], params);
@@ -356,6 +363,7 @@
   function openSource(key, requestedLine) {
     if (!snapshot.sources[key]) return;
     window.FLOW_WORLD.pause();
+    window.FLOW_WORLD_DETAILS.pause();
     if (state.playing) {
       stopPlayback();
       renderStory();
@@ -427,6 +435,13 @@
       description: 'Operate the browser, Java runtime and memory',
       text: 'simulation heap threads session lock packets client server build',
       route: '#world'
+    },
+    {
+      type: 'SIMULATION',
+      title: 'Detailed 3D lab',
+      description: 'Inspect heap objects, stack frames and application data',
+      text: 'simulation detailed internals zoom focus heap stack fields persistence orders browser',
+      route: '#world-details'
     },
     ...window.FLOW_INTERNALS.index,
     {
@@ -502,6 +517,7 @@
   }
   function openSearch() {
     window.FLOW_WORLD.pause();
+    window.FLOW_WORLD_DETAILS.pause();
     if (state.playing) {
       stopPlayback();
       renderStory();

@@ -1,0 +1,120 @@
+/* Copyright 2026 Vaadin Ltd. Licensed under the Apache License, Version 2.0. */
+/* Text is attached to real 3D faces in both rendering paths. */
+.runtime-world--detailed #world-canvas .world-model-face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.runtime-world--detailed #world-canvas .world-model-face[hidden] {
+  display: none;
+}
+.runtime-world--detailed .world-label span {
+  display: block;
+}
+.runtime-world--detailed .world-label small {
+  display: block;
+  font: 9px/1.4 var(--sans);
+  color: var(--world-muted);
+  margin-top: 3px;
+}
+.runtime-world--detailed .world-transfer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 6px 9px;
+  border: 1px solid var(--orange);
+  border-radius: 5px;
+  background: var(--world-bg);
+  color: var(--atlas-aura-yellow);
+  font: 10px var(--mono);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.runtime-world--detailed .world-transfer[hidden] {
+  display: none;
+}
+.runtime-world--detailed .world-focus-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: -12px 0 20px;
+  border-radius: 5px;
+  color: var(--world-text);
+  background: var(--sidebar-active);
+  border: 1px solid var(--accent-line);
+  font-size: 11px;
+}
+.runtime-world--detailed .world-focus-status {
+  position: absolute;
+  right: 15px;
+  bottom: 85px;
+  display: grid;
+  gap: 6px;
+  max-width: 230px;
+  padding: 10px;
+  border: 1px solid var(--world-line);
+  background: var(--world-bg);
+  border-radius: 6px;
+  font-size: 11px;
+}
+.runtime-world--detailed .world-focus-status[hidden] {
+  display: none;
+}
+.runtime-world--detailed .world-focus-status button {
+  background: transparent;
+  color: var(--sidebar-accent);
+  font-size: 10px;
+  padding: 0;
+}
+.runtime-world--detailed .world-app-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 18px 0;
+}
+.runtime-world--detailed .world-app-actions > span {
+  width: 100%;
+  font: 9px var(--mono);
+  color: var(--sidebar-accent);
+}
+.runtime-world--detailed .world-app-actions button {
+  padding: 8px;
+  font-size: 10px;
+  border-radius: 4px;
+  color: var(--world-text);
+  background: var(--sidebar-active);
+}
+@media (max-width: 520px) {
+  .runtime-world--detailed .world-label small {
+    display: none;
+  }
+  .runtime-world--detailed .world-label {
+    max-width: 155px;
+    font-size: 8px;
+  }
+  .runtime-world--detailed .world-legend {
+    gap: 8px;
+    font-size: 7px;
+  }
+}
+.runtime-world--detailed #world-canvas {
+  isolation: isolate;
+  overflow: hidden;
+}
+.runtime-world--detailed #world-labels {
+  z-index: 1;
+}
+.runtime-world--detailed .world-viewport.is-focused .world-live-caption p {
+  display: none;
+}
+.runtime-world--detailed .world-viewport.is-focused .world-live-caption h3 {
+  font-size: 14px;
+}
+.runtime-world--detailed .world-focus-status {
+  z-index: 2;
+}
+.runtime-world--detailed .world-viewport.is-focused .world-live-caption {
+  max-width: 260px;
+}

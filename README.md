@@ -1,18 +1,19 @@
 # Vaadin visualizations
 
 [**Open Flow Atlas**](https://vesanieminen.github.io/vaadin-visualizations/)
-· [**Enter the 3D runtime lab**](https://vesanieminen.github.io/vaadin-visualizations/#world)
+· [**3D runtime lab**](https://vesanieminen.github.io/vaadin-visualizations/#world)
+· [**Detailed 3D lab**](https://vesanieminen.github.io/vaadin-visualizations/#world-details)
 
 An interactive guide to how Vaadin Flow works, from the browser and Java runtime
 to packages and source code. It assumes ordinary Java and web development knowledge.
 
 - Follow six animated journeys through clicks, startup, navigation, push, binding,
   and frontend builds.
-- Operate a 3D simulation: click the application, follow packets, separate memory
-  layers, hold the session lock, and add a second browser tab. Double-click any
-  object for a close-up of its contents, including Java fields and thread stacks.
-- Use the miniature browser to navigate, edit a profile, fetch example orders,
-  reconnect, and trigger background updates across seven runtime experiments.
+- Start with the original **3D runtime lab** for a spatial overview of the browser,
+  network and Java runtime, with six interactive experiments.
+- Open the separate **Detailed 3D lab** to inspect Java fields and references,
+  heap contents, thread stacks and application records. Double-click an object
+  to focus it, or operate the miniature browser across seven experiments.
 - Explore module dependencies, package relationships, concept internals, and
   commit-pinned source in an offline reader.
 - Uses Vaadin Aura colors and works with WebGL or software 3D rendering.
