@@ -14,7 +14,7 @@
       'The browser application',
       'browser',
       'What the person actually sees',
-      'This screen is a tiny counter application. Click its blue button, or use the experiment controls, to follow the work through the whole system. The screen changes only after the simulated response comes back.',
+      'Use the miniature application: increment its counter, open Orders and load records, edit a profile, reconnect, or trigger a background update. Each control starts a source-backed journey. The screen reflects server results only when the simulated response comes back.',
       ['HTML and web components', 'Application JavaScript and CSS', 'The Flow client runtime'],
       'binding',
       'click/dom'
@@ -584,6 +584,73 @@
           'The displayed value is now 8. Push changes delivery timing; locking and state synchronization still apply.',
           'Browser = 8 · Java = 8',
           { client: 8 }
+        )
+      ]
+    },
+    data: {
+      title: 'Load application data',
+      action: 'Fetch orders',
+      story: 'navigation',
+      steps: [
+        step(
+          'browser',
+          'Ask for order rows',
+          'This illustrative application uses a Grid backed by a DataProvider. Loading rows starts a server request; the database is application infrastructure.',
+          'Grid requests rows',
+          { clientRoute: '/orders', route: '/orders', orders: [] }
+        ),
+        step(
+          'servlet',
+          'Enter the UI request',
+          'Flow handles the request in the UI context under the session lock.',
+          'UI #1 · request',
+          { locked: true, thread: 'request' }
+        ),
+        step(
+          'provider',
+          'Fetch a range',
+          'DataCommunicator asks the DataProvider for a range of items. The provider belongs to the application and can use a repository or another data source.',
+          'fetch(offset=0, limit=3)',
+          { thread: 'fetch' }
+        ),
+        step(
+          'database',
+          'Query the application repository',
+          'In this example the provider calls an application repository. Flow does not supply this database, schema, query, or transaction. Three illustrative order records are returned.',
+          'Application code → repository → 3 orders',
+          { queried: true }
+        ),
+        step(
+          'provider',
+          'Return application items',
+          'The provider supplies a stream of application items. DataCommunicator prepares the range and its client representation.',
+          'Stream<Order> → item data'
+        ),
+        step(
+          'writer',
+          'Encode the UI update',
+          'Flow delivers the pending client updates and instructions. Java entities stay on the server; the browser receives their presentation data.',
+          'UIDL + client instructions',
+          { locked: false, thread: 'idle' }
+        ),
+        step(
+          'client-tree',
+          'Apply the client update',
+          'Client-side state and pending instructions update the grid. The full Grid protocol is abstracted in this teaching model.',
+          'Rows → grid rendering',
+          {
+            orders: [
+              '1001        Ada            €120',
+              '1002        Grace           €85',
+              '1003        Linus          €210'
+            ]
+          }
+        ),
+        step(
+          'browser',
+          'Render the order rows',
+          'The browser shows the three records. Fetching records did not persist a component, a UI, or the session.',
+          '3 rows visible · application-owned data'
         )
       ]
     },

@@ -9,7 +9,10 @@ to packages and source code. It assumes ordinary Java and web development knowle
 - Follow six animated journeys through clicks, startup, navigation, push, binding,
   and frontend builds.
 - Operate a 3D simulation: click the application, follow packets, separate memory
-  layers, hold the session lock, and add a second browser tab.
+  layers, hold the session lock, and add a second browser tab. Double-click any
+  object for a close-up of its contents, including Java fields and thread stacks.
+- Use the miniature browser to navigate, edit a profile, fetch example orders,
+  reconnect, and trigger background updates across seven runtime experiments.
 - Explore module dependencies, package relationships, concept internals, and
   commit-pinned source in an offline reader.
 - Uses Vaadin Aura colors and works with WebGL or software 3D rendering.

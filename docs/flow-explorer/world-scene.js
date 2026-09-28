@@ -2,42 +2,42 @@
 (() => {
   'use strict';
   const placements = {
-    browser: [-7, 3.4, -0.4],
-    dom: [-8.6, 0.6, 3],
-    'client-tree': [-5.7, 0.6, 3],
-    'client-engine': [-7, 0.7, -2.6],
-    queue: [-3.5, 0.65, 1.6],
-    network: [-0.6, 1.35, 1.3],
-    servlet: [2.7, 0.8, -1.4],
-    service: [6.7, 0.55, -3.2],
-    heap: [6.3, 2.5, 0.5],
-    session: [6.3, 2, 0.6],
-    ui: [5.5, 1.45, 0.6],
-    component: [4.7, 3.1, 0.1],
-    element: [7, 3.15, 0.1],
-    'server-tree': [5.6, 0.75, 2.5],
-    features: [8.7, 1.35, 2.1],
-    writer: [2.7, 0.7, 3.1],
-    threads: [10.1, 0.8, -2],
-    access: [10.2, 0.8, 0.1],
-    push: [2.7, 0.55, 5],
-    binder: [7.2, 0.8, 4.9],
-    bean: [9.4, 0.8, 4.8],
-    provider: [10.2, 0.55, 6.8],
-    database: [13.2, 0.85, 4],
-    scanner: [-3.7, 0.6, -7],
-    build: [-0.3, 0.6, -7],
-    bundle: [3.1, 0.6, -7],
-    'second-ui': [7.3, 2.5, -1.1]
+    browser: [-10, 3.4, -0.8],
+    dom: [-12.1, 0.7, 3.6],
+    'client-tree': [-7.7, 0.7, 3.6],
+    'client-engine': [-10, 0.8, -4.2],
+    queue: [-5, 0.8, 0.7],
+    network: [-1.7, 1.2, 1],
+    servlet: [1.8, 1, -2.7],
+    service: [7.5, 0.8, -5.4],
+    heap: [8, 2.6, 0.4],
+    session: [7.1, 2.1, 0.8],
+    ui: [7.1, 0.5, 1],
+    component: [4.8, 2.5, -0.2],
+    element: [8.3, 2.7, -0.1],
+    'server-tree': [6.3, 0.9, 3.8],
+    features: [10.4, 1, 3.8],
+    writer: [1.8, 0.8, 4.7],
+    threads: [13.5, 1, -2.5],
+    access: [13.6, 0.8, 0.9],
+    push: [1.7, 0.8, 7.7],
+    binder: [6.7, 0.8, 7.8],
+    bean: [10.6, 1, 7.7],
+    provider: [13.6, 0.8, 8.1],
+    database: [16.4, 0.8, 5],
+    scanner: [-5, 0.9, -9.5],
+    build: [-0.5, 0.9, -9.5],
+    bundle: [4, 0.9, -9.5],
+    'second-ui': [10.1, 2.8, -1.8]
   };
   const spreads = {
-    browser: [-1, 1.5, -1],
+    browser: [-1, 1, -1],
     dom: [-1, 0.3, 1],
     'client-tree': [0.3, 1.3, 1],
     'client-engine': [0, 0.8, -1],
-    component: [-1, 2.8, 0],
-    element: [0.5, 3, 0],
-    ui: [0, 0.8, 0],
+    component: [-1, 2.4, 0],
+    element: [0.5, 2.6, 0],
+    ui: [0, 0.5, 0],
     'server-tree': [-0.3, 1.2, 1.4],
     features: [1.1, 1.5, 1],
     'second-ui': [1, 1.8, -0.5]
@@ -58,6 +58,7 @@
     'build',
     'database'
   ]);
+  // Muted lines are object relationships. The bright, directed route is execution.
   const relationships = [
     ['browser', 'dom'],
     ['dom', 'client-tree'],
@@ -78,11 +79,11 @@
     ['build', 'bundle']
   ];
   const presets = {
-    overview: { position: [14.5, 13.5, 24], target: [1.7, 1.5, 0] },
-    browser: { position: [-8, 7, 15], target: [-6.7, 2, 0] },
-    runtime: { position: [12, 13, 22], target: [1, 1.6, 1.5] },
-    memory: { position: [17, 12, 17], target: [6.5, 2.2, 0.8] },
-    build: { position: [7, 10, 6], target: [-0.4, 0.8, -7] }
+    overview: { position: [17, 18, 33], target: [1.3, 1.2, 0.3] },
+    browser: { position: [-9, 11, 18], target: [-9, 1.5, 0.1] },
+    runtime: { position: [12, 16, 28], target: [1, 1.5, 1.5] },
+    memory: { position: [14, 12, 20], target: [7.8, 1.8, 1.8] },
+    build: { position: [2, 7, 6], target: [-0.5, 1.4, -9.5] }
   };
   function readPalette() {
     const el = document.createElement('span');
@@ -122,6 +123,7 @@
       this.palette = readPalette();
       this.groups = new Map();
       this.pickables = [];
+      this.modelPanels = [];
       this.lines = [];
       this.explode = 0;
       this.targetExplode = 0;
@@ -148,7 +150,7 @@
       this.renderer.toneMappingExposure = 1.35;
       this.renderer.domElement.setAttribute(
         'aria-label',
-        '3D Flow runtime. Drag to orbit; scroll to zoom. Use the object selector for keyboard inspection.'
+        '3D Flow runtime. Drag to orbit; scroll to zoom; double-click an object to focus. Use the inspector for keyboard access.'
       );
       this.renderer.domElement.tabIndex = 0;
       host.append(this.renderer.domElement);
@@ -160,7 +162,7 @@
       this.controls.target.set(...presets.overview.target);
       this.controls.enableDamping = true;
       this.controls.dampingFactor = 0.1;
-      this.controls.minDistance = 6;
+      this.controls.minDistance = 2;
       this.controls.maxDistance = 65;
       this.controls.maxPolarAngle = Math.PI * 0.47;
       this.controls.minPolarAngle = 0.15;
@@ -234,10 +236,10 @@
     createPlatforms() {
       const T = this.T;
       for (const [x, z, w, d, c] of [
-        [-6.4, 0.3, 10, 8, this.palette.blue],
-        [6.4, 1.4, 10.8, 11.7, this.palette.green],
-        [-0.3, -7, 11, 3.4, this.palette.purple],
-        [13.3, 4, 3.2, 3.5, this.palette.orange]
+        [-9.7, 0.1, 12, 11.6, this.palette.blue],
+        [8, 1.5, 15.5, 16, this.palette.green],
+        [-0.5, -9.5, 14, 3.8, this.palette.purple],
+        [16.5, 5, 3.4, 4, this.palette.orange]
       ]) {
         const platform = new T.Group();
         platform.position.set(x, -0.22, z);
@@ -257,166 +259,31 @@
       label.dataset.worldSelect = id;
       label.innerHTML = `<i></i><span>${window.FLOW_WORLD_CONTENT.objects[id].title}</span>`;
       label.addEventListener('click', () => this.onSelect(id), { signal: this.abort.signal });
+      label.addEventListener('dblclick', () => this.focusObject(id), { signal: this.abort.signal });
+      label.title = 'Click to inspect · Double-click to focus';
       this.labels.append(label);
       group.userData.label = label;
       group.userData.labelOffset = new this.T.Vector3(0, 1.15, 0);
       return group;
     }
     createObjects() {
-      const T = this.T,
-        c = this.palette;
       for (const id of Object.keys(placements)) {
         const group = this.addGroup(id);
-        const zone = window.FLOW_WORLD_CONTENT.objects[id].zone;
-        const color =
-          zone === 'browser'
-            ? c.blue
-            : zone === 'build'
-              ? c.purple
-              : zone === 'network' || zone === 'application'
-                ? c.orange
-                : c.green;
-        if (id === 'browser') {
-          this.createBrowser(group);
-          continue;
-        }
-        if (id === 'heap' || id === 'session') {
-          this.box(group, id === 'heap' ? [8.3, 5, 6.7] : [6.9, 3.5, 4.7], [0, 0, 0], color, {
-            opacity: id === 'heap' ? 0.025 : 0.035,
-            edge: id === 'heap' ? 0x658993 : color,
-            pick: false
-          });
-          group.userData.labelOffset.set(id === 'heap' ? 1 : -3, id === 'heap' ? 3.25 : 2.1, id === 'heap' ? -2 : 1);
-          if (id === 'session') this.createLock(group);
-          continue;
-        }
-        if (['dom', 'client-tree', 'server-tree', 'component', 'second-ui'].includes(id)) {
-          this.createTree(group, color, id === 'component');
-          group.userData.labelOffset.y = 1.7;
-          if (id === 'second-ui') group.scale.setScalar(0.63);
-          continue;
-        }
-        if (id === 'ui') {
-          this.box(group, [3.9, 0.16, 2.8], [0, -0.1, 0], c.green, { opacity: 0.2 });
-          group.userData.labelOffset.set(-1.8, 0.15, 1.6);
-          continue;
-        }
-        if (id === 'network') {
-          const ring = new T.Mesh(new T.TorusGeometry(0.63, 0.045, 8, 40), this.material(color));
-          ring.rotation.y = -0.25;
-          ring.userData.id = id;
-          this.pickables.push(ring);
-          group.add(ring);
-          const inner = new T.Mesh(new T.SphereGeometry(0.14, 12, 8), new T.MeshBasicMaterial({ color }));
-          group.add(inner);
-          group.userData.labelOffset.y = 1;
-          continue;
-        }
-        if (id === 'database') {
-          for (let i = 0; i < 3; i++) {
-            const mesh = new T.Mesh(new T.CylinderGeometry(0.85, 0.85, 0.43, 32), this.material(0x799aa5));
-            mesh.position.y = i * 0.48;
-            group.add(mesh);
-            mesh.userData.id = id;
-            this.pickables.push(mesh);
-            const rim = new T.Mesh(new T.TorusGeometry(0.84, 0.022, 6, 36), new T.MeshBasicMaterial({ color }));
-            rim.rotation.x = Math.PI / 2;
-            rim.position.y = i * 0.48 + 0.22;
-            group.add(rim);
-          }
-          group.userData.labelOffset.y = 2;
-          continue;
-        }
-        if (id === 'threads') {
-          for (let i = 0; i < 3; i++) {
-            this.box(group, [2.7, 0.13, 0.55], [0, i * 0.42, 0], 0x41596f);
-            for (let j = 0; j < 3; j++)
-              this.box(
-                group,
-                [0.57, 0.23, 0.38],
-                [-0.86 + j * 0.83, i * 0.42 + 0.18, 0],
-                i === 0 ? c.orange : c.purple,
-                { opacity: 0.9 }
-              );
-          }
-          group.userData.labelOffset.y = 1.8;
-          continue;
-        }
-        if (id === 'access' || id === 'queue') {
-          this.box(group, [1.9, 0.1, 0.9], [0, -0.15, 0], color, { opacity: 0.25 });
-          for (let i = 0; i < 3; i++)
-            this.box(group, [0.38, 0.5, 0.55], [-0.62 + i * 0.62, 0.18, 0], color, { opacity: 0.8 });
-          continue;
-        }
-        if (id === 'features') {
-          for (let i = 0; i < 3; i++)
-            this.box(
-              group,
-              [0.52, 0.4, 0.5],
-              [(i - 1) * 0.68, Math.abs(i - 1) * 0.25, 0],
-              [c.blue, c.purple, c.orange][i]
-            );
-          continue;
-        }
-        if (id === 'binder') {
-          for (let i = 0; i < 3; i++)
-            this.box(group, [0.55, 0.42, 0.8], [(i - 1) * 0.72, 0, 0], [c.blue, c.purple, c.green][i]);
-          continue;
-        }
-        if (id === 'bean') {
-          this.box(group, [1, 0.85, 0.75], [0, 0.1, 0], 0xcce6df);
-          for (let i = 0; i < 3; i++)
-            this.box(group, [0.62, 0.06, 0.025], [0, 0.32 - i * 0.19, 0.39], c.green, { edges: false });
-          continue;
-        }
-        const isBuild = zone === 'build';
-        this.box(group, [isBuild ? 2.25 : 1.8, 0.65, isBuild ? 1.7 : 1.2], [0, 0, 0], isBuild ? 0x7c74af : 0x548c88);
-        this.box(group, [isBuild ? 1.8 : 1.4, 0.04, isBuild ? 1.24 : 0.78], [0, 0.35, 0], color, { opacity: 0.8 });
-        for (let i = 0; i < 3; i++)
-          this.box(group, [0.1, 0.08, 0.09], [-0.42 + i * 0.28, 0.09, isBuild ? 0.88 : 0.62], 0xccfff4, {
-            edges: false
-          });
+        if (id === 'browser') this.createBrowser(group);
+        else this.createModel(group, id);
       }
-      // The chassis is visual context; it is not a modeled heap address space.
-      const rack = new T.Group();
-      rack.position.set(9, 0.9, -4.1);
-      this.scene.add(rack);
-      for (let i = 0; i < 3; i++) this.box(rack, [2.2, 0.42, 1.2], [0, i * 0.52, 0], 0x34465b, { edge: 0x7794a0 });
       this.groups.get('second-ui').visible = false;
     }
     createLock(parent) {
       const T = this.T;
       this.lock = new T.Group();
-      this.lock.position.set(-3.05, -0.4, 2.45);
+      this.lock.userData.id = 'session';
+      this.lock.position.set(-4.1, -0.3, 3.85);
       parent.add(this.lock);
       this.lockBody = this.box(this.lock, [0.62, 0.5, 0.35], [0, 0, 0], this.palette.green);
       this.lockRing = new T.Mesh(new T.TorusGeometry(0.23, 0.055, 8, 22), this.material(this.palette.green));
       this.lockRing.position.set(0, 0.39, 0);
       this.lock.add(this.lockRing);
-    }
-    createTree(group, color, vertical = false) {
-      const coords = vertical
-        ? [
-            [0, 1, 0],
-            [-0.85, 0.15, 0],
-            [0.85, 0.15, 0]
-          ]
-        : [
-            [0, 0.4, -0.65],
-            [-0.8, 0.15, 0.55],
-            [0.8, 0.15, 0.55]
-          ];
-      this.box(group, [2.55, 0.06, 2.15], [0, -0.2, 0], color, { opacity: 0.09, pick: false });
-      const boxes = [];
-      for (const p of coords) boxes.push(this.box(group, [0.67, 0.43, 0.59], p, color));
-      for (let i = 1; i < 3; i++) {
-        const geometry = new this.T.BufferGeometry().setFromPoints([
-          new this.T.Vector3(...coords[0]),
-          new this.T.Vector3(...coords[i])
-        ]);
-        group.add(new this.T.Line(geometry, new this.T.LineBasicMaterial({ color, transparent: true, opacity: 0.8 })));
-      }
-      group.userData.treeBoxes = boxes;
     }
     createBrowser(group) {
       const T = this.T;
@@ -449,7 +316,16 @@
       this.paintBrowser({ client: 7, server: 7, clientRoute: '/counter', route: '/counter' });
     }
     paintBrowser(runtime) {
-      const signature = JSON.stringify([runtime.client, runtime.clientRoute, runtime.form, runtime.saved, this.second]);
+      const signature = JSON.stringify([
+        runtime.client,
+        runtime.clientRoute,
+        runtime.form,
+        runtime.saved,
+        runtime.orders,
+        runtime.stage,
+        runtime.waiting,
+        this.second
+      ]);
       if (signature === this.screenSignature) return;
       this.screenSignature = signature;
       const ctx = this.screenCanvas.getContext('2d'),
@@ -476,9 +352,9 @@
       ctx.fillText('flow app', 28, 146);
       ctx.font = '24px system-ui';
       ctx.fillStyle = '#5d6d89';
-      ctx.fillText('Overview', 28, 222);
+      ctx.fillText('Counter', 28, 222);
       ctx.fillText('Orders', 28, 278);
-      ctx.fillText('Settings', 28, 334);
+      ctx.fillText('Profile', 28, 334);
       ctx.fillStyle = '#283852';
       ctx.font = 'bold 40px system-ui';
       ctx.fillText(
@@ -500,25 +376,68 @@
       );
       ctx.fillStyle = '#233653';
       ctx.font = runtime.form ? 'bold 70px system-ui' : 'bold 115px system-ui';
-      ctx.fillText(
-        runtime.form ? 'Ada' : runtime.clientRoute === '/orders' ? 'Orders' : String(runtime.client),
-        285,
-        440
-      );
+      ctx.fillText(runtime.form ? 'Ada' : runtime.clientRoute === '/orders' ? '' : String(runtime.client), 285, 440);
+      if (runtime.clientRoute === '/orders' && !runtime.form) {
+        ctx.font = '22px ui-monospace, monospace';
+        ctx.fillStyle = '#233653';
+        ctx.fillText('ORDER       CUSTOMER       TOTAL', 285, 350);
+        const rows = runtime.orders || [];
+        if (!rows.length) ctx.fillText('Load rows from your application →', 285, 408);
+        rows.forEach((row, i) => ctx.fillText(row, 285, 390 + i * 32));
+      }
       ctx.fillStyle = c.blue;
       ctx.fillRect(285, 482, 346, 76);
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 27px system-ui';
-      ctx.fillText(runtime.form ? (runtime.saved ? 'Saved ✓' : 'Save profile') : 'Click me  +1', 325, 531);
+      ctx.fillText(
+        runtime.form
+          ? runtime.saved
+            ? 'Accepted ✓'
+            : 'Save profile'
+          : runtime.clientRoute === '/orders'
+            ? 'Load orders ↓'
+            : 'Click me  +1',
+        310,
+        531
+      );
       ctx.fillStyle = '#6b7a92';
       ctx.font = '20px system-ui';
-      ctx.fillText('SIMULATED APPLICATION  ·  Click the blue button', 245, 685);
+      ctx.fillText(
+        runtime.waiting
+          ? 'Waiting for the session lock…'
+          : runtime.stage && runtime.stage !== 'browser'
+            ? 'Working in: ' + window.FLOW_WORLD_CONTENT.objects[runtime.stage].title
+            : runtime.form && runtime.saved
+              ? 'Bean updated · database save is an application operation'
+              : 'Choose a view or click a control to trace its work.',
+        245,
+        655
+      );
+      ctx.fillStyle = '#e2e7f0';
+      ctx.fillRect(245, 686, 260, 48);
+      ctx.fillRect(540, 686, 320, 48);
+      ctx.fillStyle = '#415676';
+      ctx.font = '21px system-ui';
+      ctx.fillText('↻ Reconnect', 270, 717);
+      ctx.fillText('Background update +1', 565, 717);
       if (this.second) {
         ctx.fillStyle = c.green;
         ctx.font = '20px system-ui';
         ctx.fillText('Tab 2 → separate UI', 858, 46);
       }
       this.screenTexture.needsUpdate = true;
+    }
+    browserAction(uv) {
+      const x = uv.x * 1200,
+        y = (1 - uv.y) * 760;
+      if (x < 195 && y > 185 && y < 365) return y < 250 ? 'counter' : y < 305 ? 'navigation' : 'profile';
+      if (y > 482 && y < 558 && x > 285 && x < 631)
+        return this.runtime?.form ? 'binding' : this.runtime?.clientRoute === '/orders' ? 'data' : 'click';
+      if (y > 686 && y < 734) {
+        if (x > 245 && x < 505) return 'startup';
+        if (x > 540 && x < 860) return 'push';
+      }
+      return null;
     }
     createConnections() {
       const T = this.T;
@@ -535,6 +454,7 @@
         new T.LineBasicMaterial({ color: this.palette.blue, transparent: true, opacity: 0.65 })
       );
       this.scene.add(this.routeLine);
+      this.createJourney();
     }
     createPacket() {
       const T = this.T;
@@ -578,6 +498,11 @@
     }
     setView(name) {
       this.view = name;
+      this.focused = null;
+      this.focusSet = null;
+      this.host.parentElement.classList.remove('is-focused');
+      this.onFocusReset?.();
+      delete this.host.dataset.focusedObject;
       const preset = presets[name] || presets.overview;
       this.cameraTween = {
         start: performance.now(),
@@ -594,11 +519,20 @@
       if (explode !== undefined) this.targetExplode = explode;
       if (second !== undefined) this.second = second;
       if (buildVisible !== undefined) this.buildVisible = buildVisible;
-      if (follow !== undefined) this.follow = follow;
+      if (follow !== undefined) {
+        this.follow = follow;
+        if (follow) {
+          this.focused = null;
+          this.focusSet = null;
+          this.host.parentElement.classList.remove('is-focused');
+          delete this.host.dataset.focusedObject;
+        }
+      }
     }
     setRuntime(runtime) {
       this.runtime = runtime;
       this.paintBrowser(runtime);
+      this.paintModels(runtime);
       if (this.lock) {
         this.lockBody.material.color.set(runtime.locked ? this.palette.orange : this.palette.green);
         this.lockRing.material.color.set(runtime.locked ? this.palette.orange : this.palette.green);
@@ -622,21 +556,38 @@
       const canvas = this.renderer.domElement,
         signal = this.abort.signal;
       canvas.addEventListener(
+        'dblclick',
+        (event) => {
+          const hit = this.hitTest(event);
+          if (hit) this.focusObject(hit.object.userData.id);
+        },
+        { signal }
+      );
+      canvas.addEventListener(
         'pointerdown',
         (event) => {
-          this.down = { x: event.clientX, y: event.clientY };
+          this.down = { x: event.clientX, y: event.clientY, button: event.button };
         },
         { signal }
       );
       canvas.addEventListener(
         'pointerup',
         (event) => {
-          if (!this.down || Math.hypot(event.clientX - this.down.x, event.clientY - this.down.y) > 5) return;
+          if (
+            !this.down ||
+            this.down.button !== 0 ||
+            Math.hypot(event.clientX - this.down.x, event.clientY - this.down.y) > 5
+          )
+            return;
           const hit = this.hitTest(event);
           if (!hit) return;
-          if (hit.object.userData.screen && hit.uv.x > 0.23 && hit.uv.x < 0.54 && hit.uv.y > 0.26 && hit.uv.y < 0.38) {
-            this.onAction();
-            return;
+          if (hit.object.userData.screen) {
+            const action = this.browserAction(hit.uv);
+            if (action) {
+              clearTimeout(this.actionTimer);
+              this.actionTimer = setTimeout(() => this.onAction(action), 400);
+              return;
+            }
           }
           this.onSelect(hit.object.userData.id);
         },
@@ -653,6 +604,10 @@
         'keydown',
         (event) => {
           if (event.target !== canvas) return;
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            this.focusObject(this.selected);
+          }
           if (event.key === 'r' || event.key === 'Home') {
             event.preventDefault();
             this.setView('overview');
@@ -721,7 +676,10 @@
           spread = spreads[id] || [0, 0, 0];
         group.position.set(...base).addScaledVector(new this.T.Vector3(...spread), this.explode);
         const zone = window.FLOW_WORLD_CONTENT.objects[id].zone;
-        group.visible = (id !== 'second-ui' || this.second) && (zone !== 'build' || this.buildVisible);
+        group.visible =
+          (id !== 'second-ui' || this.second) &&
+          (zone !== 'build' || this.buildVisible) &&
+          (!this.focusSet || this.focusSet.has(id));
         if (id === 'heap') group.scale.y = 1 + this.explode * 0.45;
         if (id === 'session') group.scale.y = 1 + this.explode * 0.48;
         group.traverse((child) => {
@@ -739,7 +697,7 @@
         });
       }
       if (this.runtime?.dirty) {
-        for (const mesh of this.groups.get('server-tree').userData.treeBoxes)
+        for (const mesh of this.groups.get('server-tree').userData.treeBoxes || [])
           mesh.material.emissive.set(this.palette.orange);
       }
       for (const { from, to, line } of this.lines) {
@@ -752,6 +710,7 @@
         positions.needsUpdate = true;
         line.geometry.computeBoundingSphere();
       }
+      this.updateJourney();
       if (this.phaseFrom && this.active && this.phaseFrom !== this.active) {
         const a = this.getPoint(this.phaseFrom),
           b = this.getPoint(this.active),
@@ -759,8 +718,11 @@
         mid.y += Math.min(4, a.distanceTo(b) * 0.22) + 0.6;
         const curve = new this.T.CatmullRomCurve3([a, mid, b]);
         this.routeLine.geometry.setFromPoints(curve.getPoints(40));
-        this.routeLine.visible = true;
-        this.packet.visible = true;
+        this.routeLine.visible = this.groups.get(this.phaseFrom).visible && this.groups.get(this.active).visible;
+        this.routeArrow.visible = this.routeLine.visible;
+        this.placeArrow(this.routeArrow, curve, 0.88);
+        this.positionTransfer(curve.getPoint(0.5));
+        this.packet.visible = this.routeLine.visible;
         this.packet.position.copy(curve.getPoint(this.reduced ? 1 : Math.min(1, this.progress || 0)));
         if (this.follow && this.playing && !this.reduced) {
           const desired = this.packet.position.clone().add(new this.T.Vector3(7, 6, 11));
@@ -769,6 +731,8 @@
         }
       } else {
         this.routeLine.visible = false;
+        this.routeArrow.visible = false;
+        this.transferLabel.hidden = true;
         this.packet.visible = false;
       }
       if (this.cameraTween) {
@@ -781,7 +745,10 @@
       }
       this.controls.update();
       this.renderer.render(this.scene, this.camera);
-      if (this.software) this.projectBrowserScreen();
+      if (this.software) {
+        this.projectBrowserScreen();
+        this.projectModelPanels();
+      }
       this.positionLabels();
     }
     projectBrowserScreen() {
@@ -809,7 +776,10 @@
         dy3 = p0.y - p1.y + p2.y - p3.y;
       const denominator = dx1 * dy2 - dx2 * dy1;
       const visible =
-        this.camera.position.z > origin.z && corners.every((p) => p.z > 0 && p.z < 1) && Math.abs(denominator) > 0.01;
+        this.groups.get('browser').visible &&
+        this.camera.position.z > origin.z &&
+        corners.every((p) => p.z > 0 && p.z < 1) &&
+        Math.abs(denominator) > 0.01;
       this.screenCanvas.hidden = !visible;
       if (!visible) return;
       const g = (dx3 * dy2 - dx2 * dy3) / denominator,
@@ -862,7 +832,7 @@
         const label = group.userData.label,
           zone = window.FLOW_WORLD_CONTENT.objects[id].zone;
         const relevant =
-          this.view === 'browser'
+          this.focused === id || this.view === 'browser'
             ? zone === 'browser'
             : this.view === 'memory'
               ? zone === 'server'
@@ -875,7 +845,7 @@
         const x = (point.x * 0.5 + 0.5) * width,
           y = (-point.y * 0.5 + 0.5) * height;
         const inBounds = point.z < 1 && point.z > -1 && x > 45 && x < width - 45 && y > 25 && y < height - 45;
-        const overlaps = taken.some((box) => Math.abs(x - box.x) < 135 && Math.abs(y - box.y) < 33);
+        const overlaps = taken.some((box) => Math.abs(x - box.x) < 160 && Math.abs(y - box.y) < 40);
         const coversScreen =
           id !== 'browser' &&
           x > screenBounds.left - 50 &&
@@ -896,6 +866,7 @@
       this.disposed = true;
       cancelAnimationFrame(this.frame);
       this.abort.abort();
+      clearTimeout(this.actionTimer);
       this.resizeObserver.disconnect();
       this.controls.dispose();
       const geometries = new Set(),
@@ -919,6 +890,7 @@
       this.renderer.forceContextLoss?.();
       this.renderer.domElement.remove();
       if (this.software) this.screenCanvas.remove();
+      this.modelPanels.forEach((panel) => panel.canvas.remove());
       this.labels.replaceChildren();
     }
   }

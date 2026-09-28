@@ -26,7 +26,7 @@ on the same machine, so use a hosted URL when sharing with others.
 The distributable runtime consists of `index.html`, `styles.css`, `aura-colors.css`,
 `atlas.css`, `internals.css`, `app.js`, `content.js`, `atlas.js`, `internals.js`,
 `internals-content.js`, `world.css`, `world.js`, `world-scene.js`,
-`world-content.js`, `vendor/three-0.180.0.min.js`, `vendor/THREE-LICENSE.txt`,
+`world-content.js`, `world-models.js`, `vendor/three-0.180.0.min.js`, `vendor/THREE-LICENSE.txt`,
 `snapshot.js`, `README.md`, and `LICENSE`. The Python
 generators are only needed when refreshing the bundled source snapshot.
 
@@ -44,7 +44,7 @@ shared palette.
   buffered form binding, and frontend builds.
 - A **3D runtime lab** that brings the browser, network, Java objects, execution
   contexts, session lock and build pipeline into one interactive simulation.
-  Run six experiments across 27 inspectable concepts and 47 steps. Click the
+  Run seven experiments across 27 inspectable concepts and 55 steps. Click the
   application on the 3D monitor, or use the experiment controls, to see client
   and server state diverge and synchronize.
 - Play/pause, replay, previous/next step, direct step selection and playback speed.
@@ -93,7 +93,26 @@ simulation controls and object explanations remain usable. Three.js
 is MIT-licensed; its license and reproducible bundling instructions are in
 `vendor/`. No third-party service receives data from the visualization.
 
-Drag the 3D scene to orbit, scroll/pinch to zoom, or use camera presets. With the
+Drag the 3D scene to orbit, scroll/pinch to zoom, or use camera presets.
+Double-click a shape or its label to focus it. The inspector's **Zoom into this
+object** button and Enter on the scene provide keyboard alternatives. Close-ups
+isolate the object and, for heap/session/UI containers, their contents. Use
+**Back to whole system** to restore the overview. Focus is preserved in shared links.
+
+The shapes show DOM nesting, state-node IDs, Java object fields and references,
+request/worker call frames, ordered queues, and frontend generation stages.
+Object fields and stack contents update with the experiment. Bright arrows and
+labels show execution or protocol transfer; muted lines show object relationships.
+These are schematic objects and frames, not literal JVM layouts or stack traces.
+
+The monitor's Counter, Orders and Profile links, action button, Reconnect and
+Background update controls operate the simulation. The inspector offers the same
+controls without needing to click the small screen. **Load orders** follows a
+DataProvider through an illustrative application repository, returning three
+example records. The database schema and repository operation are examples of
+application code, not features supplied by Flow. Profile binding updates a bean;
+it does not implicitly write to that database.
+ With the
 canvas focused, arrow keys rotate the camera, `+`/`-` zoom and `R`/Home resets it.
 Every object is also accessible through the inspector's selector. **Open up the
 system** separates its layers; **Add a second tab** adds an independent UI under
@@ -171,6 +190,7 @@ node --check docs/flow-explorer/internals.js
 node --check docs/flow-explorer/internals-content.js
 node --check docs/flow-explorer/world.js
 node --check docs/flow-explorer/world-scene.js
+node --check docs/flow-explorer/world-models.js
 node --check docs/flow-explorer/world-content.js
 ```
 
